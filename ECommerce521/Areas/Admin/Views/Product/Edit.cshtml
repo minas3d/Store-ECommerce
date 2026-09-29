@@ -1,0 +1,139 @@
+﻿@model CategoryWithBrandVM
+
+<div class="container">
+    <div class="row mb-3 align-items-center my-3">
+        <div class="col-md-6">
+            <h2 class="display-6">Update Product</h2>
+        </div>
+    </div>
+
+    <div class="row my-3">
+        <div class="col-12">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input class="form-control" name="Name" value="@Model.Product!.Name">
+                </div>
+                <div class="mb-3">
+                    <label for="Img" class="form-label">Img</label>
+                    <input type="file" class="form-control" id="Img" name="Img" accept="image/*" onchange="previewImage(event)">
+                </div>
+
+                <div class="mb-3">
+                    <img id="preview"
+                         src="~/images/product_images/@Model.Product.MainImg"
+                         alt="Current Image"
+                         style="max-width: 200px; border:1px solid #ccc; padding:5px; border-radius:10px;" />
+                </div>
+                <div class="mb-3">
+                    <label for="SubImgs" class="form-label">Replace Sub Imgs</label>
+                    <input type="file" class="form-control" name="SubImgs" multiple>
+                </div>
+
+                @foreach(var item in Model.ProductSubImages)
+                {
+                    <div class="mb-3">
+                        <img id="preview"
+                            src="~/images/product_images/sub_images/@item.Img"
+                                alt="Current Image"
+                                style="max-width: 200px; border:1px solid #ccc; padding:5px; border-radius:10px;" />
+                        <a href="/Admin/Product/DeleteSubImage/@Model.Product.Id?img=@item.Img" class="btn btn-danger">Delete</a>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <form action="/Admin/Product/AddSubImg" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="productId" value="@Model.Product.Id" />
+                        <input type="file" class="form-control" name="SubNewImgs" multiple>
+
+                        <input type="submit" formaction="/Admin/Product/AddSubImg" name="AddSubImg" value="Add Sub Img" class="btn btn-outline-primary mt-3" />
+                    </form>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <div class="form-floating">
+                        <textarea class="form-control" placeholder="Leave a description here" name="Description" style="height: 100px">@Model.Product!.Description</textarea>
+                        <label for="description">You Description Here...</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="Price" class="form-label">Price</label>
+                    <input class="form-control" name="Price" value="@Model.Product!.Price">
+                </div>
+                <div class="mb-3">
+                    <label for="Discount" class="form-label">Discount</label>
+                    <input class="form-control" name="Discount" value="@Model.Product!.Discount">
+                </div>
+                <div class="mb-3">
+                    <label for="Quantity" class="form-label">Quantity</label>
+                    <input class="form-control" name="Quantity" value="@Model.Product!.Quantity">
+                </div>
+                <div class="mb-3">
+                    <label for="CategoryId" class="form-label">Category</label>
+                    <select name="CategoryId" class="form-select">
+                        @foreach (var item in Model.Categories)
+                        {
+                            if (@Model.Product.CategoryId == item.Id)
+                            {
+                                <option value="@item.Id" selected>@item.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="BrandId" class="form-label">Brand</label>
+                    <select name="BrandId" class="form-select">
+                        @foreach (var item in Model.Brands)
+                        {
+                            if (@Model.Product.BrandId == item.Id)
+                            {
+                                <option value="@item.Id" selected>@item.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select name="Status" class="form-select">
+                        @if (Model.Product.Status)
+                        {
+                            <option value="true" selected>Active</option>
+                            <option value="false">InActive</option>
+                        }
+                        else
+                        {
+                            <option value="true">Active</option>
+                            <option value="false" selected>InActive</option>
+                        }
+                    </select>
+                </div>
+                <input type="submit" name="Edit" formaction="/Admin/Product/Edit" value="Update" class="btn btn-outline-primary mt-3" />
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById("preview");
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result; // الصورة الجديدة
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+

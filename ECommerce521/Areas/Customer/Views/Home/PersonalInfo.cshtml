@@ -1,0 +1,25 @@
+﻿@model List<Person>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Salary</th>
+            <th scope="col">Age</th>
+            <th scope="col">Skills</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
+        {
+            <tr>
+                <th scope="row">@item.Id</th>
+                <td>@item.Name</td>
+                <td>@item.Salary</td>
+                <td>@item.Age</td>
+                <td>@String.Join(", ", item.Skills)</td>
+            </tr>
+        }
+    </tbody>
+</table>

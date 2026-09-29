@@ -1,0 +1,224 @@
+﻿@model IEnumerable<Product>
+
+@{
+    const double quantity = 300;
+}
+
+@section Scripts {
+    <partial name="_NotificationPartial" />
+}
+
+<!-- Filter Section -->
+<section class="py-3 filter-bar">
+    <div class="container">
+        <div class="row" style="background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;">
+            <div class="col-12">
+                <form>
+                    <div class="row">
+                        <!-- Product Name -->
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" placeholder="Product Name" name="ProductName" value="@ViewBag.ProductName">
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="col-md-2">
+                            <input type="number" class="form-control" placeholder="Min Price" name="MinPrice" value="@ViewBag.MinPrice">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control" placeholder="Max Price" name="maxPrice"
+                                   value="@ViewBag.maxPrice" name="MaxPrice"
+                                   value="@ViewBag.MaxPrice">
+                        </div>
+
+                        <!-- Category -->
+                        <div class="col-md-2">
+                            <select name="CategoryId" class="form-control">
+                                <option>--Select Category--</option>
+                                @foreach (var item in ViewBag.categories)
+                                {
+                                    @if (item.Id == ViewBag.CategoryId)
+                                    {
+                                        <option value="@item.Id" selected>@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Brand -->
+                        <div class="col-md-2">
+                            <select name="BrandId" class="form-control">
+                                <option value="">--Select Brand--</option>
+
+                                @if (ViewData["brands"] is IEnumerable<Brand> brands)
+                                {
+                                    @foreach (var item in brands)
+                                    {
+                                        @if (item.Id == ViewBag.BrandId)
+                                        {
+                                            <option value="@item.Id" selected>@item.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Rating -->
+                        @* <div class="col-md-2"> *@
+                        @*     <select name="rating" class="form-control"> *@
+                        @*         <option value="">Any Rating</option> *@
+                        @*         <option>option 1</option> *@
+                        @*         <option>option 2</option> *@
+                        @*         <option>option 3</option> *@
+                        @*     </select> *@
+                        @* </div> *@
+
+                        <!-- Hot Product Checkbox -->
+                        <div class="col-md-1">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" value="true" @(ViewBag.IsHot is not null && ViewBag.IsHot ? "checked" : "")>
+                                <label class="form-check-label">Hot</label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-dark w-100">Filter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row mb-3 align-items-center my-3">
+        <div class="col-md-6">
+            <h2 class="display-6">All Products</h2>
+        </div>
+        <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
+            <a href="/Admin/Product/Create" class="btn btn-success">Create</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Category Name</th>
+                        <th scope="col">Brand Name</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th scope="row">@item.Id</th>
+                            <td>@item.Name</td>
+                            <td>@item.Price.ToString("C")</td>
+
+                            @if (item.Quantity > quantity)
+                            {
+                                <td><span class="badge text-bg-primary">@item.Quantity</span></td>
+                            }
+                            else
+                            {
+                                <td><span class="badge text-bg-danger">@item.Quantity</span></td>
+                            }
+                            <td><span class="badge text-bg-secondary">@item.Category.Name</span></td>
+                            <td><span class="badge text-bg-secondary">@item.Brand.Name</span></td>
+
+                            @if (item.Status)
+                            {
+                                <td><span class="badge text-bg-success">Active</span></td>
+                            }
+                            else
+                            {
+                                <td><span class="badge text-bg-danger">In Active</span></td>
+                            }
+
+                            <td>
+                                <a href="/Admin/Product/Edit/@item.Id" type="button" class="btn btn-warning">Edit</a>
+                                <a href="/Admin/Product/Delete/@item.Id" class="btn btn-danger btn-delete">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row d-flex justify-content-center align-content-center">
+        <nav aria-label="Page navigation example">
+            <ul style="display: flex;justify-content: center;" class="pagination">
+                @if (ViewBag.currentPage > 1)
+                {
+                    <li class="page-item"><a class="page-link" href="?page=@(ViewBag.currentPage - 1)&ProductName=@ViewBag.productName&MinPrice=@ViewBag.minPrice&maxPrice=@ViewBag.maxPrice&CategoryId=@ViewBag.categoryId&BrandId=@ViewBag.brandId">Previous</a></li>
+                }
+                @for (var i = 1; i <= ViewBag.totalPages; i++)
+                {
+                    <li class="page-item"><a class="page-link" href="?page=@i&ProductName=@ViewBag.productName&MinPrice=@ViewBag.minPrice&maxPrice=@ViewBag.maxPrice&CategoryId=@ViewBag.categoryId&BrandId=@ViewBag.brandId">@i</a></li>
+                }
+                @if (ViewBag.currentPage < ViewBag.totalPages)
+                {
+                    <li class="page-item"><a class="page-link" href="?page=@(ViewBag.currentPage + 1)&ProductName=@ViewBag.productName&MinPrice=@ViewBag.minPrice&maxPrice=@ViewBag.maxPrice&CategoryId=@ViewBag.categoryId&BrandId=@ViewBag.brandId">Next</a></li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll(".btn-delete");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function (e) {
+                e.preventDefault(); // stop normal navigation
+
+                const url = this.getAttribute("href");
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This action cannot be undone!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                          title: "Deleted!",
+                          text: "Your file has been deleted.",
+                          icon: "success"
+                        });
+
+                        // Redirect to delete URL
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    });
+</script>
+
